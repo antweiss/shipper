@@ -6,8 +6,6 @@ import (
 	"sync"
 	"time"
 
-	objectutil "github.com/bookingcom/shipper/pkg/util/object"
-
 	corev1 "k8s.io/api/core/v1"
 
 	releaseconditions "github.com/bookingcom/shipper/pkg/util/release"
@@ -207,8 +205,8 @@ func (c *Controller) handleReleaseUpdates(old, new interface{}) {
 		klog.Errorf("Failed to get release key: %q", err)
 	}
 
-	appName, err := objectutil.GetApplicationLabel(newRelease)
-	if err != nil {
+	appName, ok := newRelease.GetLabels()[shipper.AppLabel]
+	if !ok || len(appName) == 0 {
 		klog.Errorf("Could not find application name for Release %q", releaseName)
 	}
 
